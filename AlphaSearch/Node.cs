@@ -12,14 +12,16 @@ namespace AlphaSearch
         public int Depth { get; set; }
         public bool IsLeaf => Children.Count == 0;
         public T Details { get; set; }
+        public bool IsCaseSensitive { get; set; }
 
-        public Node(char value, T details, int depth, Node<T> parent)
+        public Node(char value, T details, int depth, Node<T> parent, bool isCaseSensitive = true)
         {
             Value = value;
             Depth = depth;
             Parent = parent;
             Children = new List<Node<T>>();
             Details = details;
+            IsCaseSensitive = isCaseSensitive;
         }
 
         public static Node<T> CreateRootNode()
@@ -31,7 +33,7 @@ namespace AlphaSearch
         {
             foreach (var child in Children)
             {
-                if (child.Value == c) return child;
+                if (child.Value == c || (!IsCaseSensitive && char.ToLower(child.Value) == char.ToLower(c))) return child;
             }
             return null;
         }

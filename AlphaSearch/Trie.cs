@@ -10,14 +10,16 @@ namespace AlphaSearch
     {
         public bool AllowStoreDuplicates { get; protected set; }
         public bool AllowReturnDuplicates { get; protected set; }
+        public bool IsCaseSensitive { get; protected set; }
 
         private readonly Node<T> _root;
 
-        public Trie(bool allowStoreDuplicates, bool allowReturnDuplicates)
+        public Trie(bool allowStoreDuplicates, bool allowReturnDuplicates, bool isCaseSensitive)
         {
             _root = Node<T>.CreateRootNode();
             AllowStoreDuplicates = allowStoreDuplicates;
             AllowReturnDuplicates = allowReturnDuplicates;
+            IsCaseSensitive = isCaseSensitive;
         }
 
         private Node<T> Prefix(string s)
@@ -42,11 +44,11 @@ namespace AlphaSearch
             return prefix.Depth == s.Length && prefix.FindChildNode('$') != null;
         }
 
-        public void InsertRange(List<string> items)
+        public void InsertRange(IEnumerable<string> items)
         {
-            for (int i = 0; i < items.Count; i++)
+            for (int i = 0; i < items.Count(); i++)
             {
-                Insert(items[i]);
+                Insert(items.ElementAt(i));
             }
         }
 
@@ -59,7 +61,7 @@ namespace AlphaSearch
 
             for (int i = current.Depth; i < s.Length; i++)
             {
-                Node<T> newNode = new Node<T>(s[i], null, current.Depth + 1, current);
+                Node<T> newNode = new Node<T>(s[i], null, current.Depth + 1, current, IsCaseSensitive);
                 current.Children.Add(newNode);
                 current = newNode;
             }
@@ -85,7 +87,7 @@ namespace AlphaSearch
         public List<string> GetAllStrings(string s, List<string> result)
         {
             var currentNode = Prefix(s);
-            if (currentNode.Value == '^') return new List<string>();
+            if (currentNode.Depth != s.Length) return new List<string>();
 
             foreach (Node<T> child in currentNode.Children)
             {

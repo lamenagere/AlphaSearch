@@ -40,7 +40,7 @@ namespace ConsoleAppTest
 
         private static Trie<string> CreateTrieFromList()
         {
-            Trie<string> trie = new Trie<string>(false, true);
+            Trie<string> trie = new Trie<string>(false, true, true);
             trie.InsertRange(new List<string>()
             {
                 "A Display of My Dark Power",
@@ -74,7 +74,7 @@ namespace ConsoleAppTest
 
             var stream = new StreamReader(path);
             string line;
-            var trie = new Trie<string>(false, true);
+            var trie = new Trie<string>(false, true, false);
 
             while((line = stream.ReadLine()) != null)
             {
