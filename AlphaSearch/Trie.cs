@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 
 namespace AlphaSearch
 {
-    public class Trie
+    public class Trie<T> where T : class
     {
         public bool AllowStoreDuplicates { get; protected set; }
         public bool AllowReturnDuplicates { get; protected set; }
 
-        private readonly Node _root;
+        private readonly Node<T> _root;
 
         public Trie(bool allowStoreDuplicates, bool allowReturnDuplicates)
         {
-            _root = new Node('^', 0, null);
+            _root = Node<T>.CreateRootNode();
             AllowStoreDuplicates = allowStoreDuplicates;
             AllowReturnDuplicates = allowReturnDuplicates;
         }
 
-        private Node Prefix(string s)
+        private Node<T> Prefix(string s)
         {
             var currentNode = _root;
             var result = currentNode;
@@ -38,7 +38,7 @@ namespace AlphaSearch
 
         private bool Search(string s)
         {
-            Node prefix = Prefix(s);
+            Node<T> prefix = Prefix(s);
             return prefix.Depth == s.Length && prefix.FindChildNode('$') != null;
         }
 
@@ -52,30 +52,30 @@ namespace AlphaSearch
 
         public void Insert(string s)
         {
-            Node commonPrefix = Prefix(s);
+            Node<T> commonPrefix = Prefix(s);
             if (AllowStoreDuplicates == false && commonPrefix.Depth == s.Length) return;
 
-            Node current = commonPrefix;
+            Node<T> current = commonPrefix;
 
             for (int i = current.Depth; i < s.Length; i++)
             {
-                Node newNode = new Node(s[i], current.Depth + 1, current);
+                Node<T> newNode = new Node<T>(s[i], null, current.Depth + 1, current);
                 current.Children.Add(newNode);
                 current = newNode;
             }
 
-            current.Children.Add(new Node('$', current.Depth + 1, current));
+            current.Children.Add(new Node<T>('$', null, current.Depth + 1, current));
         }
 
         public void Delete(string s)
         {
             if (Search(s))
             {
-                Node node = Prefix(s).FindChildNode('$');
+                Node<T> node = Prefix(s).FindChildNode('$');
                 
                 while(node.IsLeaf)
                 {
-                    Node parent = node.Parent;
+                    Node<T> parent = node.Parent;
                     parent.DeleteChildNode(node.Value);
                     node = parent;
                 }
@@ -87,7 +87,7 @@ namespace AlphaSearch
             var currentNode = Prefix(s);
             if (currentNode.Value == '^') return new List<string>();
 
-            foreach (Node child in currentNode.Children)
+            foreach (Node<T> child in currentNode.Children)
             {
                 if (child.IsLeaf)
                 {

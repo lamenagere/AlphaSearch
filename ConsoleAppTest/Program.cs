@@ -10,7 +10,7 @@ namespace ConsoleAppTest
     {
         static void Main(string[] args)
         {
-            Trie tree;
+            Trie<string> tree;
 
             Console.WriteLine("Please enter a source to feed tree: (0: simple list | 1: file)");
             string source = Console.ReadLine();
@@ -38,9 +38,9 @@ namespace ConsoleAppTest
 
         }
 
-        private static Trie CreateTrieFromList()
+        private static Trie<string> CreateTrieFromList()
         {
-            Trie trie = new Trie(false, true);
+            Trie<string> trie = new Trie<string>(false, true);
             trie.InsertRange(new List<string>()
             {
                 "A Display of My Dark Power",
@@ -68,13 +68,13 @@ namespace ConsoleAppTest
             return trie;
         }
 
-        private static Trie CreateTrieFromDocument(string path)
+        private static Trie<string> CreateTrieFromDocument(string path)
         {
             if (!File.Exists(path)) return null;
 
             var stream = new StreamReader(path);
             string line;
-            var trie = new Trie(false, true);
+            var trie = new Trie<string>(false, true);
 
             while((line = stream.ReadLine()) != null)
             {

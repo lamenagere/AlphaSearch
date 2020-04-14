@@ -4,23 +4,30 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace AlphaSearch
 {
-    public class Node
+    public class Node<T> where T : class
     {
         public char Value { get; set; }
-        public List<Node> Children { get; set; }
-        public Node Parent { get; set; }
+        public List<Node<T>> Children { get; set; }
+        public Node<T> Parent { get; set; }
         public int Depth { get; set; }
         public bool IsLeaf => Children.Count == 0;
+        public T Details { get; set; }
 
-        public Node(char value, int depth, Node parent)
+        public Node(char value, T details, int depth, Node<T> parent)
         {
             Value = value;
             Depth = depth;
             Parent = parent;
-            Children = new List<Node>();
+            Children = new List<Node<T>>();
+            Details = details;
         }
 
-        public Node FindChildNode(char c)
+        public static Node<T> CreateRootNode()
+        {
+            return new Node<T>('^', null, 0, null);
+        }
+
+        public Node<T> FindChildNode(char c)
         {
             foreach (var child in Children)
             {
